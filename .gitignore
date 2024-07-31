@@ -58,6 +58,7 @@ doc/check-or-enforce-order.py
 
 packages/javascript/jupyterlab-plotly/lib/
 packages/javascript/jupyterlab-plotly/jupyterlab_plotly/labextension/static/
+packages/javascript/jupyterlab-plotly/.yarn/
 packages/python/plotly/jupyterlab_plotly/labextension/
 packages/python/plotly/jupyterlab_plotly/nbextension/index.js*
 
