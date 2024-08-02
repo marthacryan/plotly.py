@@ -30,33 +30,6 @@ npm_path = os.pathsep.join(
     ]
 )
 
-labstatic = "jupyterlab_plotly/labextension/static"
-if not os.path.exists(labstatic):
-    # Ensure the folder exists when we will look for files in it
-    os.makedirs(labstatic)
-
-prebuilt_assets = [
-    (
-        "share/jupyter/labextensions/jupyterlab-plotly",
-        [
-            "jupyterlab_plotly/labextension/package.json",
-        ],
-    ),
-    (
-        "share/jupyter/labextensions/jupyterlab-plotly/static",
-        [os.path.join(labstatic, f) for f in os.listdir(labstatic)],
-    ),
-    (
-        "share/jupyter/nbextensions/jupyterlab-plotly",
-        [
-            "jupyterlab_plotly/nbextension/extension.js",
-            "jupyterlab_plotly/nbextension/index.js",
-            "jupyterlab_plotly/nbextension/index.js.LICENSE.txt",
-        ],
-    ),
-]
-
-
 if "--skip-npm" in sys.argv or os.environ.get("SKIP_NPM") is not None:
     print("Skipping npm install as requested.")
     skip_npm = True
@@ -116,10 +89,6 @@ def js_prerelease(command, strict=False):
 def update_package_data(distribution):
     """update package_data to catch changes during setup"""
     build_py = distribution.get_command_obj("build_py")
-
-    # JS assets will not be present if we are skip npm build
-    if not skip_npm:
-        distribution.data_files.extend(prebuilt_assets)
 
     # re-init build_py options which load package_data
     build_py.finalize_options()
@@ -468,60 +437,6 @@ class UpdateBundleSchemaDevCommand(Command):
         overwrite_plotlyjs_version_file(version)
 
 
-class UpdatePlotlyJsDevCommand(Command):
-    description = "Update project to a new development version of plotly.js"
-    user_options = [
-        ("devrepo=", None, "Repository name"),
-        ("devbranch=", None, "branch or pull/number"),
-        ("local=", None, "local copy of repo, used by itself"),
-    ]
-
-    def initialize_options(self):
-        self.devrepo = "plotly/plotly.js"
-        self.devbranch = "master"
-        self.local = None
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        self.run_command("updatebundleschemadev")
-        self.run_command("jsdeps")
-        self.run_command("codegen")
-
-
-class UpdatePlotlywidgetVersionCommand(Command):
-    description = "Update package.json version of jupyterlab-plotly"
-
-    user_options = []
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        from plotly._version import git_pieces_from_vcs, render
-
-        # Update plotly.js url in package.json
-        package_json_path = os.path.join(node_root, "package.json")
-
-        with open(package_json_path, "r") as f:
-            package_json = json.load(f)
-
-        # Replace version with bundle url
-        pieces = git_pieces_from_vcs("widget-v", project_root, False)
-        pieces["dirty"] = False
-        widget_ver = render(pieces, "pep440")["version"]
-
-        package_json["version"] = widget_ver
-        with open(package_json_path, "w") as f:
-            json.dump(package_json, f, indent=2)
-
-        # write _widget_version
-        overwrite_plotlywidget_version_file(widget_ver)
-
 
 graph_objs_packages = [
     d[0].replace("/", ".")
@@ -594,11 +509,6 @@ setup(
             "package_data/templates/*",
             "package_data/datasets/*",
         ],
-        "jupyterlab_plotly": [
-            "nbextension/*",
-            "labextension/*",
-            "labextension/static/*",
-        ],
     },
     data_files=[
         ("etc/jupyter/nbconfig/notebook.d", ["jupyterlab-plotly.json"]),
@@ -615,8 +525,6 @@ setup(
         updatebundle=UpdateBundleCommand,
         updateplotlyjs=js_prerelease(UpdatePlotlyJsCommand),
         updatebundleschemadev=UpdateBundleSchemaDevCommand,
-        updateplotlyjsdev=UpdatePlotlyJsDevCommand,
-        updateplotlywidgetversion=UpdatePlotlywidgetVersionCommand,
         version=versioneer_cmds["version"],
     ),
 )
