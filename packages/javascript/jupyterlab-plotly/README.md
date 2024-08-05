@@ -1,7 +1,6 @@
-# jupyterlab_plotly
+Jupyter Extension for Plotly.py
 
-[![Github Actions Status](https://github.com/plotly/plotly.py/workflows/Build/badge.svg)](https://github.com/plotly/plotly.py/actions/workflows/build.yml)
-
+See https://plot.ly/python/getting-started/ for details.
 The plotly Jupyter extension
 
 ## Requirements

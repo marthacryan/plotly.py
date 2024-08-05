@@ -108,12 +108,6 @@
         "bundled": false,
         "singleton": true
       }
-    },
-    "_build": {
-      "load": "static/remoteEntry.a6b3f4d958201fc2b3de.js",
-      "extension": "./extension",
-      "mimeExtension": "./mimeExtension",
-      "style": "./style"
     }
   },
   "styleModule": "style/index.js"
