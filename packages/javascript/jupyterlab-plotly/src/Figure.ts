@@ -1,6 +1,6 @@
 import type { DOMWidgetModel } from "@jupyter-widgets/base";
-import _ from "https://esm.sh/lodash-es";
-import Plotly from "https://esm.sh/plotly.js@2.33.0/dist/plotly";
+import _ from "lodash";
+import Plotly from "plotly.js";
 
 // @ts-ignore
 window.PlotlyConfig = { MathJaxConfig: "local" };
@@ -25,9 +25,9 @@ type Js2PyMsg = {
 
 type Js2PyPointsCallbackMsg = {
   event_type: string;
-  points: Points;
-  device_state: InputDeviceState;
-  selector: Selector;
+  points: Points | null;
+  device_state: InputDeviceState | null;
+  selector: Selector | null;
 };
 
 type Js2PyRelayoutMsg = Js2PyMsg & {
@@ -157,7 +157,7 @@ export class FigureModel {
     this.model.set(key, value);
   }
   
-  on(event: string, cb?: () => void) {
+  on(event: string, cb: () => void) {
     this.model.on(event, cb);
   }
 
@@ -561,11 +561,11 @@ export class FigureModel {
       var numTraces = this.model.get("_data").length;
       trace_indexes = _.range(numTraces);
     }
-    if (!Array.isArray(trace_indexes)) {
+    if (trace_indexes !== undefined && trace_indexes !== null && !Array.isArray(trace_indexes)) {
       // Make sure idx is an array
       trace_indexes = [trace_indexes];
     }
-    return trace_indexes;
+    return trace_indexes ?? [];
   }
 
   /**
@@ -593,7 +593,7 @@ export class FigureModel {
     if (msgData !== null) {
       var currentTraces = this.model.get("_data");
       var newTraces = msgData.trace_data;
-      _.forEach(newTraces, function (newTrace) {
+      _.forEach(newTraces, function (newTrace: any) {
         currentTraces.push(newTrace);
       });
     }
@@ -817,8 +817,8 @@ const serializers: Record<string, Serializer> = {
  * @type {widgets.DOMWidgetView}
  */
 export class FigureView {
-  viewID: string;
-  resizeEventListener: () => void;
+  viewID: string = '';
+  resizeEventListener: () => void = () => {};
 
   model: FigureModel;
   el: HTMLElement;
@@ -891,9 +891,9 @@ export class FigureView {
         (<Plotly.PlotlyHTMLElement>that.el).on("plotly_relayout", function (update: any) {
           that.handle_plotly_relayout(update);
         });
-        (<Plotly.PlotlyHTMLElement>that.el).on("plotly_update", function (update: any) {
-          that.handle_plotly_update(update);
-        });
+        // (<Plotly.PlotlyHTMLElement>that.el).on("plotly_update", function (update: any) {
+        //   that.handle_plotly_update(update);
+        // });
         (<Plotly.PlotlyHTMLElement>that.el).on("plotly_click", function (update: any) {
           that.handle_plotly_click(update);
         });
@@ -906,12 +906,12 @@ export class FigureView {
         (<Plotly.PlotlyHTMLElement>that.el).on("plotly_selected", function (update: any) {
           that.handle_plotly_selected(update);
         });
-        (<Plotly.PlotlyHTMLElement>that.el).on("plotly_deselect", function (update: any) {
-          that.handle_plotly_deselect(update);
-        });
-        (<Plotly.PlotlyHTMLElement>that.el).on("plotly_doubleclick", function (update: any) {
-          that.handle_plotly_doubleclick(update);
-        });
+        // (<Plotly.PlotlyHTMLElement>that.el).on("plotly_deselect", function (update: any) {
+        //   that.handle_plotly_deselect(update);
+        // });
+        // (<Plotly.PlotlyHTMLElement>that.el).on("plotly_doubleclick", function (update: any) {
+        //   that.handle_plotly_doubleclick(update);
+        // });
 
         // Emit event indicating that the widget has finished
         // rendering
@@ -1011,12 +1011,13 @@ export class FigureView {
    *
    */
   getFullData() {
-    return _.mergeWith(
-      {},
-      (<Plotly.PlotlyHTMLElement>this.el)._fullData,
-      (<Plotly.PlotlyHTMLElement>this.el).data,
-      fullMergeCustomizer
-    );
+    return (<Plotly.PlotlyHTMLElement>this.el).dataset;
+    // return _.mergeWith(
+    //   {},
+    //   (<Plotly.PlotlyHTMLElement>this.el)._fullData,
+    //   (<Plotly.PlotlyHTMLElement>this.el).data,
+    //   fullMergeCustomizer
+    // );
   }
 
   /**
@@ -1026,12 +1027,13 @@ export class FigureView {
    * necessary
    */
   getFullLayout() {
-    return _.mergeWith(
-      {},
-      (<Plotly.PlotlyHTMLElement>this.el)._fullLayout,
-      (<Plotly.PlotlyHTMLElement>this.el).layout,
-      fullMergeCustomizer
-    );
+    return {};
+    // return _.mergeWith(
+    //   {},
+    //   (<Plotly.PlotlyHTMLElement>this.el)._fullLayout,
+    //   (<Plotly.PlotlyHTMLElement>this.el).lay,
+    //   fullMergeCustomizer
+    // );
   }
 
   /**
@@ -1156,7 +1158,7 @@ export class FigureView {
    * @returns {null|Selector}
    */
   buildSelectorObject(data: any): null | Selector {
-    var selectorObject: Selector;
+    var selectorObject: Selector | null;
 
     if (data.hasOwnProperty("range")) {
       // Box selection
@@ -1692,13 +1694,13 @@ function py2js_deserializer(v: any, widgetManager?: any) {
       // when saving widget state to a notebook.
       // @ts-ignore
       var typedarray_type = numpy_dtype_to_typedarray_type[v.dtype];
-      var buffer = _.has(v, "value") ? v.value.buffer : v.buffer.buffer;
+      var buffer = _.has(v, "value") ? v.value.buffer : (v as any).buffer.buffer;
       res = new typedarray_type(buffer);
     } else {
       // Deserialize object properties recursively
       res = {};
-      for (var p in v) {
-        if (v.hasOwnProperty(p)) {
+      for (var p in (v as any)) {
+        if ((v as any).hasOwnProperty(p)) {
           res[p] = py2js_deserializer(v[p]);
         }
       }
@@ -1719,12 +1721,12 @@ function py2js_deserializer(v: any, widgetManager?: any) {
  *  Value to examine
  * @returns {boolean}
  */
-function isTypedArray(potentialTypedArray: any): boolean {
-  return (
-    ArrayBuffer.isView(potentialTypedArray) &&
-    !(potentialTypedArray instanceof DataView)
-  );
-}
+// function isTypedArray(potentialTypedArray: any): boolean {
+//   return (
+//     ArrayBuffer.isView(potentialTypedArray) &&
+//     !(potentialTypedArray instanceof DataView)
+//   );
+// }
 
 /**
  * Customizer for use with lodash's mergeWith function
@@ -1734,15 +1736,15 @@ function isTypedArray(potentialTypedArray: any): boolean {
  *
  * See: https://lodash.com/docs/latest#mergeWith
  */
-function fullMergeCustomizer(objValue: any, srcValue: any, key: string) {
-  if (key[0] === "_") {
-    // Don't recurse into private properties
-    return null;
-  } else if (isTypedArray(srcValue)) {
-    // Return typed arrays directly, don't recurse inside
-    return srcValue;
-  }
-}
+// function fullMergeCustomizer(objValue: any, srcValue: any, key: string) {
+//   if (key[0] === "_") {
+//     // Don't recurse into private properties
+//     return null;
+//   } else if (isTypedArray(srcValue)) {
+//     // Return typed arrays directly, don't recurse inside
+//     return srcValue;
+//   }
+// }
 
 /**
  * Reform a Plotly.relayout like operation on an input object
@@ -2060,7 +2062,7 @@ function randstr(
     (existing && existing[res]) ||
     (parsed !== Infinity && parsed >= Math.pow(2, bits))
   ) {
-    if (_recursion > 10) {
+    if ((_recursion ?? 0) > 10) {
       console.warn("randstr failed uniqueness");
       return res;
     }
@@ -2069,13 +2071,13 @@ function randstr(
 }
 
 export default () => {
-  let model;
+  let model: FigureModel;
   return {
-    initialize(ctx) {
+    initialize(ctx: any) {
       model = new FigureModel(ctx.model, serializers);
       model.initialize();
     },
-    render({ el }) {
+    render({ el }: any) {
       const view = new FigureView(model, el);
       view.perform_render()
       return () => view.remove();

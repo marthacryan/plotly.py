@@ -6,6 +6,8 @@ import { Widget } from "@lumino/widgets";
 
 import { MODULE_NAME, MODULE_VERSION } from "./version";
 
+import { FigureModel, FigureView } from "./Figure";
+
 /**
  * Activate the widget extension.
  */
@@ -16,7 +18,10 @@ function activateWidgetExtension(
   registry.registerWidget({
     name: MODULE_NAME,
     version: MODULE_VERSION,
-    exports: () => import("./index"),
+    exports: {
+        FigureModel,
+        FigureView,
+    } as any
   });
 }
 

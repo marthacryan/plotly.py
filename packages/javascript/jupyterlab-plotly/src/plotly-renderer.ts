@@ -7,7 +7,7 @@ import { Message } from "@lumino/messaging";
 
 import { IRenderMime } from "@jupyterlab/rendermime-interfaces";
 
-import type PlotlyType from "plotly.js/dist/plotly";
+import type PlotlyType from "plotly.js";
 
 import "../style/index.css";
 
@@ -133,7 +133,7 @@ export class RenderedPlotly extends Widget implements IRenderMime.IRenderer {
     // Load plotly asynchronously
     const loadPlotly = async (): Promise<void> => {
       if (RenderedPlotly.Plotly === null) {
-        RenderedPlotly.Plotly = await import("plotly.js/dist/plotly");
+        RenderedPlotly.Plotly = await import("plotly.js");
         RenderedPlotly._resolveLoadingPlotly();
       }
       return RenderedPlotly.loadingPlotly;
@@ -167,17 +167,17 @@ export class RenderedPlotly extends Widget implements IRenderMime.IRenderer {
         }
 
         // Handle webgl context lost events
-        (<PlotlyType.PlotlyHTMLElement>this.node).on(
-          "plotly_webglcontextlost",
-          () => {
-            const png_data = <string>model.data["image/png"];
-            if (png_data !== undefined && png_data !== null) {
-              // We have PNG data, use it
-              this.updateImage(png_data);
-              return Promise.resolve();
-            }
-          }
-        );
+        // (<PlotlyType.PlotlyHTMLElement>this.node).on(
+        //   "plotly_webglcontextlost",
+        //   () => {
+        //     const png_data = <string>model.data["image/png"];
+        //     if (png_data !== undefined && png_data !== null) {
+        //       // We have PNG data, use it
+        //       this.updateImage(png_data);
+        //       return Promise.resolve();
+        //     }
+        //   }
+        // );
       });
   }
 
@@ -208,7 +208,14 @@ export class RenderedPlotly extends Widget implements IRenderMime.IRenderer {
 
   private _mimeType: string;
   private _img_el: HTMLImageElement;
-  private _model: IRenderMime.IMimeModel;
+  private _model: IRenderMime.IMimeModel = {
+    data: {},
+    metadata: {},
+    trusted: false,
+    setData: () => {
+      return;
+    }
+  };
 
   private static Plotly: typeof PlotlyType | null = null;
   private static _resolveLoadingPlotly: () => void;
