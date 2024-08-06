@@ -7,7 +7,7 @@ import { Message } from "@lumino/messaging";
 
 import { IRenderMime } from "@jupyterlab/rendermime-interfaces";
 
-import type PlotlyType from "plotly.js";
+import type PlotlyType from "plotly.js/dist/plotly";
 
 import "../style/index.css";
 
@@ -140,7 +140,11 @@ export class RenderedPlotly extends Widget implements IRenderMime.IRenderer {
     };
 
     return loadPlotly()
-      .then(() => RenderedPlotly.Plotly!.react(this.node, data, layout, config))
+      .then(() => {
+        console.log("Rendering plotly.js");
+        console.log(RenderedPlotly.Plotly);
+        return RenderedPlotly.Plotly!.react(this.node, data, layout, config)
+      })
       .then((plot) => {
         this.showGraph();
         this.hideImage();
@@ -233,7 +237,7 @@ export const rendererFactory: IRenderMime.IRendererFactory = {
   createRenderer: (options) => new RenderedPlotly(options),
 };
 
-const extensions: IRenderMime.IExtension | IRenderMime.IExtension[] = [
+const extensions: IRenderMime.IExtension[] = [
   {
     id: "@jupyterlab/plotly-extension:factory",
     rendererFactory,

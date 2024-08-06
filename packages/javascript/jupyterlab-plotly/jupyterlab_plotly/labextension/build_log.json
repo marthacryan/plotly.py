@@ -1,6 +1,6 @@
 [
   {
-    "bail": true,
+    "bail": false,
     "module": {
       "rules": [
         {
@@ -705,6 +705,7 @@
               "import": false
             },
             "assert": {},
+            "buffer": {},
             "lodash": {},
             "plotly.js": {},
             "stream": {},

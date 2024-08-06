@@ -95,6 +95,7 @@
     "@lumino/messaging": "^2.0.0",
     "@lumino/widgets": "^2.3.1-alpha.0",
     "assert": "^2.1.0",
+    "buffer": "^6.0.3",
     "lodash": "^4.17.4",
     "plotly.js": "^2.32.0",
     "stream": "^0.0.3"
@@ -108,6 +109,12 @@
         "bundled": false,
         "singleton": true
       }
+    },
+    "_build": {
+      "load": "static/remoteEntry.8802a91084dee44932a7.js",
+      "extension": "./extension",
+      "mimeExtension": "./mimeExtension",
+      "style": "./style"
     }
   },
   "styleModule": "style/index.js"
