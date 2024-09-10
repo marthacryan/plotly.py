@@ -15,6 +15,7 @@ function activateWidgetExtension(
   app: Application<Widget>,
   registry: IJupyterWidgetRegistry
 ): void {
+  console.log('activateWidgetExtension here');
   registry.registerWidget({
     name: MODULE_NAME,
     version: MODULE_VERSION,

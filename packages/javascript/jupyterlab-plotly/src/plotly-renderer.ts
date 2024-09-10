@@ -7,7 +7,7 @@ import { Message } from "@lumino/messaging";
 
 import { IRenderMime } from "@jupyterlab/rendermime-interfaces";
 
-import type PlotlyType from "plotly.js/dist/plotly";
+import type * as PlotlyType from 'plotly.js';
 
 import "../style/index.css";
 

@@ -97,7 +97,7 @@
     "assert": "^2.1.0",
     "buffer": "^6.0.3",
     "lodash": "^4.17.4",
-    "plotly.js": "^2.32.0",
+    "plotly.js": "~2.34.0",
     "stream": "^0.0.3"
   },
   "jupyterlab": {

@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling>=1.5.0", "jupyterlab>=4.0.0,<5", "hatch-nodejs-version>=0.3.2"]
+requires = ["hatchling>=1.5.0", "jupyterlab>=4.0.0,<5", "hatch-nodejs-version"]
 build-backend = "hatchling.build"
 
 [project]
@@ -20,7 +20,6 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
 ]
@@ -37,8 +36,8 @@ artifacts = ["jupyterlab_plotly/labextension"]
 exclude = [".github", "binder"]
 
 [tool.hatch.build.targets.wheel.shared-data]
-"jupyterlab_plotly/labextension" = "share/jupyter/labextensions/jupyterlab-plotly"
-"install.json" = "share/jupyter/labextensions/jupyterlab-plotly/install.json"
+"jupyterlab_plotly/labextension" = "share/jupyter/labextensions/@jupyterlab/plotly-extension"
+"install.json" = "share/jupyter/labextensions/@jupyterlab/plotly-extension/install.json"
 
 [tool.hatch.build.hooks.version]
 path = "jupyterlab_plotly/_version.py"
