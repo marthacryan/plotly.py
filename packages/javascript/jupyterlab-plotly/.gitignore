@@ -11,6 +11,8 @@ jupyterlab_plotly/labextension
 # Version file is handled by hatchling
 jupyterlab_plotly/_version.py
 
+yarn.lock
+
 # Created by https://www.gitignore.io/api/python
 # Edit at https://www.gitignore.io/?templates=python
 

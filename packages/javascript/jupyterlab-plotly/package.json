@@ -31,6 +31,7 @@
     "build:lib:prod": "tsc",
     "build:nbextension": "webpack --mode=production",
     "build:prod": "jlpm clean && jlpm build:lib:prod && jlpm build:labextension",
+    "build:bundle": "esbuild --bundle --format=esm --outfile=../../python/plotly/plotly/bundle.js src/Figure.ts",
     "clean": "jlpm clean:lib",
     "clean:all": "jlpm clean:lib && jlpm clean:labextension && jlpm clean:lintcache",
     "clean:labextension": "rimraf jupyterlab_plotly/labextension jupyterlab_plotly/_version.py",
