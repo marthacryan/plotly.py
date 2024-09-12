@@ -303,7 +303,8 @@ else:
                     return FigureWidget
                 else:
                     raise ImportError()
-            except Exception:
+            except Exception as e:
+                print(e)
                 from ..missing_ipywidgets import FigureWidget
 
                 return FigureWidget
